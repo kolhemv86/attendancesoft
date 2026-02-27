@@ -1,0 +1,26 @@
+{
+  "name": "atten",
+  "version": "1.0.0",
+  "description": "This is attendance system for employee",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "axios": "^1.13.5"
+  },
+  "build": {
+    "appId": "com.apicaller.app",
+    "win": {
+      "target": "nsis"
+    }
+  },
+  "devDependencies": {
+    "electron-builder": "^26.8.1"
+  }
+}

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<body style="text-align:center;margin-top:50px;font-family:Arial">
+
+<h2>Initial Setup</h2>
+
+<input id="input1" placeholder="Enter Input1 Value" /><br><br>
+<button onclick="save()">Save & Continue</button>
+
+<script>
+function save() {
+  const value = document.getElementById("input1").value;
+
+  if (!value) {
+    alert("Please enter value");
+    return;
+  }
+
+  window.api.saveConfig(value);
+}
+</script>
+
+</body>
+</html>

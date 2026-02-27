@@ -1,0 +1,8 @@
+.idea
+.env
+uploads
+node_modules
+./uploads
+./logs
+logs/
+config/config.json

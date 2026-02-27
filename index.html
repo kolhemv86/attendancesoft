@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Punching Data</title>
+  <style>
+    body { font-family: Arial; text-align: center; margin-top: 20px; }
+    table { border-collapse: collapse; margin: auto; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px 12px; }
+    th { background-color: #f4f4f4; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+
+  <h2>Punching Data Software</h2>
+
+  <!-- <input id="input1" placeholder="Enter Your Emplyee code"/><br><br> -->
+  <input id="input2" placeholder="Enter Date (YYYY-mm-dd)" value="" /><br><br>
+
+  <button onclick="start()">Start</button>
+  <button onclick="stop()">Stop</button>
+
+  <p id="status">Status: Stopped</p>
+
+  <div id="tableContainer"></div>
+
+  <script>
+  /*   const fs = require("fs");
+    const path = require("path");
+    const { remote } = require("electron");
+    const axios = require("axios"); */
+
+   /*  const configPath = path.join(
+        remote.app.getPath("userData"),
+        "config.json"
+    ); */
+
+    let input1Value = "";
+
+    window.addEventListener("DOMContentLoaded", async () => {
+      const config = await window.api.getConfig();
+
+      if (config && config.input1) {
+          input1Value = config.input1;
+      } else {
+          alert("Setup not completed.");
+      }
+
+      const currentDate = new Date().toISOString().split("T")[0];
+      document.getElementById("input2").value = currentDate;
+   });
+    
+    
+    
+    let intervalId;
+
+    function renderTable(response) {
+
+        // PunchData extract karo
+        let data = response;
+
+        if (!Array.isArray(data) || data.length === 0) {
+            document.getElementById("tableContainer").innerHTML = "No Data Found";
+            return;
+        }
+
+        const removeColumns = ["M_Flag"];
+
+        let table = "<table><tr>";
+
+        // Existing headers
+       Object.keys(data[0])
+        .filter(key => !removeColumns.includes(key))
+        .forEach(key => {
+        table += `<th>${key}</th>`;
+      });
+
+        table += "<th>In/Out</th>";
+        table += "</tr>";
+
+        // Rows
+        data.forEach((row, index) => {
+            table += "<tr>";
+
+            Object.entries(row)
+            .filter(([key]) => !removeColumns.includes(key))
+            .forEach(([key, value]) => {
+                table += `<td>${value ?? ""}</td>`;
+            });
+
+            const inOut = (index % 2 === 0) ? 
+            '<span style="color:green;font-weight:bold;">In</span>' :
+            '<span style="color:red;font-weight:bold;">Out</span>';
+
+            table += `<td><b>${inOut}</b></td>`;
+
+            table += "</tr>";
+        });
+
+        table += "</table>";
+
+        document.getElementById("tableContainer").innerHTML = table;
+    }
+
+    function start() {
+      const val1 = input1Value;
+      
+/* 
+      if (!val2) {
+        alert("Please enter both values");
+        return;
+      }
+ */
+      //document.getElementById("input1").disabled = true;
+      document.getElementById("status").innerText = "Status: Running...";
+
+      async function callAPI() {
+        try {
+          const val2 = document.getElementById("input2").value;
+          const d = new Date(val2);
+          const dateStr = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;  
+
+          const response = await axios.get(
+            "https://api.etimeoffice.com/api/DownloadPunchData",
+            {
+              params: {
+                Empcode: val1,
+                FromDate: `${dateStr}_00:01`,
+                toDate: `${dateStr}_23:59`,
+              },
+              headers: {
+                    Authorization: "Basic V2VibXluZTpXZWJteW5lOkNjQEAxMjM0NTp0cnVlOg=="
+              },
+              timeout: 10000
+            }
+          );
+          renderTable(response.data.PunchData);
+        } catch (err) {
+          console.log("Error:", err.message);
+        }
+      }
+
+      callAPI(); // first time immediately
+      intervalId = setInterval(callAPI, 60000);
+    }
+
+    function stop() {
+      clearInterval(intervalId);
+      document.getElementById("status").innerText = "Status: Stopped";
+    }
+  </script>
+
+</body>
+</html>
