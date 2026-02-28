@@ -1,6 +1,7 @@
 .idea
 .env
 uploads
+dist
 node_modules
 ./uploads
 ./logs

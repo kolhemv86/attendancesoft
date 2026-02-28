@@ -29,7 +29,7 @@ function createWindow(file) {
     return false;
   });
 
-// mainWindow.webContents.openDevTools();
+  //mainWindow.webContents.openDevTools();
 }
 
 app.whenReady().then(() => {

@@ -22,7 +22,7 @@
           </div>
 
           <div class="card-body">
-
+            <div class="row justify-content-center mb-4 text-center" id="empcode"></div>
            <div class="row justify-content-center mb-4">
             <div class="col-md-4">
               <input id="input2" 
@@ -39,14 +39,17 @@
             </div>
           </div>
 
+           <div class="text-center mb-4" id="status">
+           
+           </div>
            <div class="text-center mb-4">
-            <span class="badge bg-success fs-5 px-4 py-2 shadow-sm">
-              <span id="status"></span>
-            </span>
-          </div>
+              <span class="badge text-bg-danger">
+                Next refresh in <span id="timer">60</span> sec
+              </span>
+           </div> 
 
 
-            <div id="tableContainer"></div>
+            <div id="tableContainer" class="text-center"></div>
 
         </div>
 
@@ -82,7 +85,9 @@
     
     
     
-    let intervalId;
+  let intervalId;
+  let countdownInterval = null;
+  let timeLeft = 60;
 
    onLoadstart(); 
 
@@ -96,10 +101,14 @@
 
     function renderTable(response) {
 
-        let data = response;
+        let data = response.PunchData;
+
+        document.getElementById("empcode").innerHTML = "<b>Employee Code : "+input1Value+"</b>";
+
 
         if (!Array.isArray(data) || data.length === 0) {
             document.getElementById("tableContainer").innerHTML = "No Data Found";
+            document.getElementById("status").innerHTML = "";
             return;
         }
 
@@ -178,7 +187,7 @@
 
         document.getElementById("tableContainer").innerHTML = table;
 
-        document.getElementById("status").innerHTML = 'Total Hours : '+formattedTime;
+        document.getElementById("status").innerHTML = '<span class="badge bg-success fs-5 px-4 py-2 shadow-sm"><span>Current Working Hours : '+formattedTime+'</span></span>'
     }
 
     function onLoadstart() {
@@ -205,15 +214,39 @@
               timeout: 10000
             }
           );
-          renderTable(response.data.PunchData);
+          renderTable(response.data);
+          resetCountdown();
+
         } catch (err) {
           console.log("Error:", err.message);
         }
       }
 
       callAPI(); // first time immediately
+
+      if (intervalId) clearInterval(intervalId);
+
       intervalId = setInterval(callAPI, 60000);
 
+    }
+
+    function resetCountdown() {
+
+      timeLeft = 60;
+      document.getElementById("timer").innerText = timeLeft;
+
+      if (countdownInterval) clearInterval(countdownInterval);
+
+      countdownInterval = setInterval(() => {
+
+        timeLeft--;
+        document.getElementById("timer").innerText = timeLeft;
+
+        if (timeLeft <= 0) {
+          clearInterval(countdownInterval);
+        }
+
+      }, 1000);
     }
 
     /* function stop() {
