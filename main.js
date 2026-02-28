@@ -7,8 +7,8 @@ const configPath = path.join(app.getPath("userData"), "config.json");
 
 function createWindow(file) {
   mainWindow = new BrowserWindow({
-    width: 500,
-    height: 500,
+    width: 900,
+    height: 600,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
@@ -29,7 +29,7 @@ function createWindow(file) {
     return false;
   });
 
- // mainWindow.webContents.openDevTools();
+// mainWindow.webContents.openDevTools();
 }
 
 app.whenReady().then(() => {
